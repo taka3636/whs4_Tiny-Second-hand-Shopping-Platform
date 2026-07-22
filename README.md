@@ -20,7 +20,7 @@ GitHub 저장소를 받은 뒤 아래 순서대로 실행하면 됩니다. (git,
 ```bash
 # 1) 저장소 받기
 git clone https://github.com/<본인아이디>/<저장소명>.git
-cd <저장소명>/app
+cd <저장소명>
 
 # 2) Node 버전 맞추기 (nvm 사용 시) — .nvmrc 기준으로 자동 설치·적용
 nvm install && nvm use
