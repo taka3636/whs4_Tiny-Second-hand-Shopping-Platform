@@ -1,0 +1,92 @@
+<% var title = '관리자 — Blue Market' %>
+<%- include('partials/header') %>
+<h1>관리자 페이지</h1>
+
+<div class="card">
+  <h3>사용자 (<%= users.length %>)</h3>
+  <table>
+    <thead><tr><th>ID</th><th>아이디</th><th>계정명</th><th>잔액</th><th>상태</th><th style="text-align:right">관리</th></tr></thead>
+    <tbody>
+      <% users.forEach(function(u){ %>
+        <tr>
+          <td><%= u.id %></td>
+          <td>@<%= u.username %></td>
+          <td><%= u.display_name %><% if (u.is_admin) { %> <span class="tag blue">관리자</span><% } %></td>
+          <td><%= u.balance.toLocaleString() %>원</td>
+          <td><% if (u.status === 'suspended') { %><span class="tag red">휴면</span><% } else { %><span class="tag green">활성</span><% } %></td>
+          <td style="text-align:right">
+            <% if (!u.is_admin) { %>
+              <div style="display:inline-flex;gap:6px">
+                <% if (u.status === 'suspended') { %>
+                  <form method="post" action="/admin/users/<%= u.id %>/activate" style="margin:0"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn sm ghost" type="submit">해제</button></form>
+                <% } else { %>
+                  <form method="post" action="/admin/users/<%= u.id %>/suspend" style="margin:0"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn sm ghost" type="submit">휴면</button></form>
+                <% } %>
+                <form method="post" action="/admin/users/<%= u.id %>/delete" onsubmit="return confirm('삭제하시겠습니까?')" style="margin:0"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn sm danger" type="submit">삭제</button></form>
+              </div>
+            <% } else { %><span class="muted small">—</span><% } %>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h3>상품 (<%= products.length %>)</h3>
+  <table>
+    <thead><tr><th>ID</th><th>상품명</th><th>판매자</th><th>가격</th><th>상태</th><th style="text-align:right">관리</th></tr></thead>
+    <tbody>
+      <% products.forEach(function(p){ %>
+        <tr>
+          <td><%= p.id %></td>
+          <td><a href="/products/<%= p.id %>"><%= p.name %></a></td>
+          <td>@<%= p.seller %></td>
+          <td><%= p.price.toLocaleString() %>원</td>
+          <td><% if (p.is_blocked) { %><span class="tag red">차단</span><% } else { %><span class="tag green">정상</span><% } %></td>
+          <td style="text-align:right">
+            <div style="display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+              <form method="post" action="/admin/products/<%= p.id %>/changeid" style="margin:0;display:inline-flex;gap:4px">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="number" name="new_id" min="1" step="1" placeholder="새 ID" style="width:74px;padding:6px 8px" required>
+                <button class="btn sm ghost" type="submit">ID변경</button>
+              </form>
+              <% if (p.is_blocked) { %>
+                <form method="post" action="/admin/products/<%= p.id %>/unblock" style="margin:0"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn sm ghost" type="submit">차단해제</button></form>
+              <% } %>
+              <form method="post" action="/admin/products/<%= p.id %>/delete" onsubmit="return confirm('삭제하시겠습니까?')" style="margin:0"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn sm danger" type="submit">삭제</button></form>
+            </div>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h3>신고 (<%= reports.length %>)</h3>
+  <% if (reports.length === 0) { %><p class="muted center small">신고 내역이 없습니다.</p><% } else { %>
+  <table>
+    <thead><tr><th>ID</th><th>유형</th><th>대상</th><th>신고자</th><th>사유</th><th>상태</th><th style="text-align:right">처리</th></tr></thead>
+    <tbody>
+      <% reports.forEach(function(r){ %>
+        <tr>
+          <td><%= r.id %></td>
+          <td><%= r.target_type === 'product' ? '상품' : '사용자' %></td>
+          <td><%= r.target_id %></td>
+          <td>@<%= r.reporter %></td>
+          <td class="small"><%= r.reason %></td>
+          <td><% if (r.status === 'resolved') { %><span class="tag gray">처리됨</span><% } else { %><span class="tag blue">접수</span><% } %></td>
+          <td style="text-align:right">
+            <% if (r.status !== 'resolved') { %>
+              <form method="post" action="/admin/reports/<%= r.id %>/resolve" style="margin:0"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="btn sm ghost" type="submit">처리완료</button></form>
+            <% } %>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <% } %>
+</div>
+
+<%- include('partials/footer') %>

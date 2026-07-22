@@ -1,0 +1,37 @@
+<% var title = product.name + ' — Blue Market' %>
+<%- include('partials/header') %>
+<a class="small muted" href="/products">← 상품 목록</a>
+<div class="card" style="margin-top:14px">
+  <% if (product.image) { %>
+    <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" style="width:100%;max-height:360px;object-fit:cover;border-radius:12px;border:1px solid var(--line)">
+  <% } else { %>
+    <div class="thumb" style="height:200px">사진</div>
+  <% } %>
+  <h1 style="margin-bottom:6px;margin-top:14px"><%= product.name %></h1>
+  <div class="price balance" style="font-size:26px"><%= product.price.toLocaleString() %>원</div>
+  <div class="divider"></div>
+  <p style="white-space:pre-wrap"><%= product.description || '(설명 없음)' %></p>
+  <p class="small muted">판매자: <a href="/users/<%= product.seller_id %>"><%= product.seller_name %></a> (@<%= product.seller_username %>)</p>
+
+  <% if (currentUser) { %>
+    <div class="divider"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <% if (currentUser.id !== product.seller_id) { %>
+        <a class="btn" href="/wallet?to=<%= encodeURIComponent(product.seller_username) %>&amount=<%= product.price %>">구매하기 (판매자에게 송금)</a>
+        <a class="btn ghost" href="/users/<%= product.seller_id %>">판매자와 1:1 채팅</a>
+        <a class="btn ghost danger" href="/report?type=product&target=<%= product.id %>">신고</a>
+      <% } %>
+      <% if (currentUser.id === product.seller_id || currentUser.is_admin) { %>
+        <a class="btn ghost" href="/products/<%= product.id %>/edit">수정</a>
+        <form method="post" action="/products/<%= product.id %>/delete" onsubmit="return confirm('삭제하시겠습니까?')" style="margin:0">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button class="btn danger" type="submit">상품 삭제</button>
+        </form>
+      <% } %>
+    </div>
+  <% } else { %>
+    <div class="divider"></div>
+    <p class="muted small"><a href="/login">로그인</a> 후 구매·채팅·신고가 가능합니다.</p>
+  <% } %>
+</div>
+<%- include('partials/footer') %>

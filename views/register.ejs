@@ -1,0 +1,33 @@
+<% var title = '회원가입 — Blue Market' %>
+<%- include('partials/header') %>
+<div class="narrow" style="margin:0 auto">
+  <h1 class="center">회원가입</h1>
+  <div class="card">
+    <% if (error) { %><div class="alert err"><%= error %></div><% } %>
+    <form method="post" action="/register">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <label>아이디 <span class="muted small">(영문/숫자/_ 3~20자)</span></label>
+      <input type="text" name="username" value="<%= form.username || '' %>" autocomplete="username" required>
+      <label>계정명 <span class="muted small">(표시 이름, 2~20자)</span></label>
+      <input type="text" name="display_name" value="<%= form.display_name || '' %>" required>
+      <label>비밀번호 <span class="muted small">(8자 이상)</span></label>
+      <input type="password" name="password" autocomplete="new-password" required>
+      <label>비밀번호 확인</label>
+      <input type="password" name="password2" autocomplete="new-password" required>
+      <label>보안문자</label>
+      <% if (captcha.useRecaptcha) { %>
+        <div class="g-recaptcha" data-sitekey="<%= captcha.site %>"></div>
+      <% } else { %>
+        <div class="caprow" style="display:flex;gap:10px;align-items:center">
+          <img class="capImg" src="/captcha.svg" alt="보안문자" style="border:1px solid var(--line);border-radius:8px;height:54px">
+          <button type="button" class="btn sm ghost" onclick="var im=this.parentNode.querySelector('.capImg');im.src='/captcha.svg?new='+Date.now()">새로고침</button>
+        </div>
+        <input type="text" name="captcha" placeholder="위 문자를 입력" autocomplete="off" required style="margin-top:8px;text-transform:uppercase">
+      <% } %>
+      <div style="margin-top:20px"><button class="btn block" type="submit">가입하기</button></div>
+    </form>
+    <% if (captcha.useRecaptcha) { %><script src="https://www.google.com/recaptcha/api.js" async defer></script><% } %>
+    <p class="center small muted" style="margin-top:16px">이미 계정이 있으신가요? <a href="/login">로그인</a></p>
+  </div>
+</div>
+<%- include('partials/footer') %>

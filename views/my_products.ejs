@@ -1,0 +1,31 @@
+<% var title = '내 상품 — Blue Market' %>
+<%- include('partials/header') %>
+<div class="section-title"><h1 style="margin:0">내 상품 관리</h1><a class="btn sm" href="/products/new">+ 판매하기</a></div>
+<div class="card">
+  <% if (products.length === 0) { %>
+    <p class="muted center">등록한 상품이 없습니다.</p>
+  <% } else { %>
+    <table>
+      <thead><tr><th>상품명</th><th>가격</th><th>상태</th><th></th></tr></thead>
+      <tbody>
+        <% products.forEach(function(p){ %>
+          <tr>
+            <td><a href="/products/<%= p.id %>"><%= p.name %></a></td>
+            <td><%= p.price.toLocaleString() %>원</td>
+            <td><% if (p.is_blocked) { %><span class="tag red">차단됨</span><% } else { %><span class="tag green">판매중</span><% } %></td>
+            <td style="text-align:right">
+              <div style="display:inline-flex;gap:6px">
+                <a class="btn sm ghost" href="/products/<%= p.id %>/edit">수정</a>
+                <form method="post" action="/products/<%= p.id %>/delete" onsubmit="return confirm('삭제하시겠습니까?')" style="margin:0">
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                  <button class="btn sm danger" type="submit">삭제</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+<%- include('partials/footer') %>

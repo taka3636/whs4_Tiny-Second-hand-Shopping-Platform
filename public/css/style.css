@@ -1,0 +1,157 @@
+/* ============================================================
+   Blue Bottle 톤 — 미니멀 / 따뜻한 화이트 / 코발트 블루
+   ============================================================ */
+:root{
+  --bb-blue:#1b52a4;
+  --bb-blue-deep:#123f7f;
+  --bb-blue-soft:#eaf1fb;
+  --ink:#1c1c1a;
+  --paper:#f7f4ee;      /* 따뜻한 오프화이트 */
+  --card:#ffffff;
+  --muted:#8a887f;
+  --line:#e7e2d8;
+  --danger:#b23b3b;
+  --ok:#2f7d5b;
+  --radius:14px;
+  --shadow:0 1px 3px rgba(20,30,50,.05), 0 8px 24px rgba(20,30,50,.04);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",sans-serif;
+  line-height:1.6;
+  font-size:15px;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--bb-blue);text-decoration:none}
+a:hover{text-decoration:underline}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+h1{font-size:30px;margin:.2em 0 .4em}
+h2{font-size:22px;margin:0 0 .6em}
+h3{font-size:17px;margin:0 0 .4em}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+
+/* ---------- 레이아웃 ---------- */
+/* 헤더 · 바디 · 푸터를 색으로 구분: 헤더=소프트블루, 바디=웜화이트, 푸터=네이비 */
+.site-header{
+  background:#e9f1fb;border-bottom:1px solid #cfe0f5;
+  position:sticky;top:0;z-index:20;
+}
+.nav{
+  max-width:1040px;margin:0 auto;padding:14px 22px;
+  display:flex;align-items:center;gap:22px;
+}
+.brand{display:flex;align-items:center;gap:10px;font-family:Georgia,serif;font-size:20px;font-weight:600;color:var(--ink)}
+.brand:hover{text-decoration:none}
+.brand svg{display:block}
+.nav .spacer{flex:1}
+.nav a.navlink{color:var(--ink);font-size:14px;padding:6px 2px;border-bottom:2px solid transparent}
+.nav a.navlink:hover{color:var(--bb-blue);text-decoration:none;border-color:var(--bb-blue)}
+.nav .who{font-size:13px;color:var(--muted)}
+
+.container{max-width:1040px;margin:0 auto;padding:34px 22px 80px}
+.narrow{max-width:460px}
+.center{text-align:center}
+
+/* ---------- 카드 ---------- */
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:26px;box-shadow:var(--shadow);
+}
+.card + .card{margin-top:20px}
+
+/* ---------- 버튼 ---------- */
+.btn{
+  display:inline-block;background:var(--bb-blue);color:#fff;border:none;
+  padding:11px 20px;border-radius:999px;font-size:14px;font-weight:600;cursor:pointer;
+  transition:background .15s ease;line-height:1;
+}
+.btn:hover{background:var(--bb-blue-deep);text-decoration:none}
+.btn.block{display:block;width:100%;text-align:center}
+.btn.ghost{background:transparent;color:var(--bb-blue);border:1px solid var(--bb-blue)}
+.btn.ghost:hover{background:var(--bb-blue-soft)}
+.btn.danger{background:var(--danger)}
+.btn.danger:hover{background:#8f2d2d}
+.btn.sm{padding:7px 13px;font-size:12.5px}
+
+/* ---------- 폼 ---------- */
+label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px}
+input[type=text],input[type=password],input[type=number],input[type=search],textarea,select{
+  width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;
+  background:#fdfcfa;font-size:14px;color:var(--ink);font-family:inherit;
+}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--bb-blue);background:#fff}
+textarea{resize:vertical;min-height:90px}
+.row{display:flex;gap:12px}
+.row>*{flex:1}
+
+/* ---------- 알림 ---------- */
+.alert{padding:11px 14px;border-radius:10px;font-size:13.5px;margin-bottom:14px}
+.alert.err{background:#fbecec;color:var(--danger);border:1px solid #f0cccc}
+.alert.ok{background:#e9f5ee;color:var(--ok);border:1px solid #c4e6d3}
+
+/* ---------- 히어로 ---------- */
+.hero{padding:70px 0 40px;text-align:center}
+.hero h1{font-size:42px;margin-bottom:.2em}
+.hero p{color:var(--muted);font-size:17px;max-width:520px;margin:0 auto 26px}
+.hero .btn{margin:0 6px}
+
+/* ---------- 상품 그리드 ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.product{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px;transition:transform .12s ease,box-shadow .12s ease;display:block;color:var(--ink)
+}
+.product:hover{transform:translateY(-2px);box-shadow:var(--shadow);text-decoration:none;border-color:#d8d2c6}
+.product .pname{font-family:Georgia,serif;font-size:17px;margin-bottom:10px}
+.product .price{color:var(--bb-blue);font-weight:700}
+.thumb{
+  height:120px;border-radius:10px;margin-bottom:14px;
+  background:linear-gradient(135deg,#eef3fb,#e3ecf8);
+  display:flex;align-items:center;justify-content:center;color:#9bb4d8;
+}
+
+/* ---------- 테이블 ---------- */
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{color:var(--muted);font-weight:600;font-size:12.5px}
+.tag{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:600}
+.tag.blue{background:var(--bb-blue-soft);color:var(--bb-blue)}
+.tag.red{background:#fbecec;color:var(--danger)}
+.tag.gray{background:#f0eee7;color:var(--muted)}
+.tag.green{background:#e9f5ee;color:var(--ok)}
+
+/* ---------- 채팅 ---------- */
+.chat{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);overflow:hidden}
+.chat .log{height:300px;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}
+.msg{max-width:78%;padding:8px 12px;border-radius:12px;font-size:13.5px;background:#f1efe8;align-self:flex-start;word-break:break-word}
+.msg .nm{font-size:11px;color:var(--muted);margin-bottom:2px}
+.msg.mine{background:var(--bb-blue-soft);align-self:flex-end}
+.chat form{display:flex;gap:8px;border-top:1px solid var(--line);padding:10px}
+.chat form input{border-radius:999px}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin:34px 0 14px}
+
+.footer{background:var(--bb-blue-deep);color:#c7d5ea;font-size:12.5px;text-align:center;padding:30px 26px}
+
+/* 우측 슬라이드 로그인/회원가입 드로어 */
+.drawer-overlay{position:fixed;inset:0;background:rgba(18,30,50,.35);opacity:0;visibility:hidden;transition:opacity .2s ease;z-index:60}
+.drawer-overlay.open{opacity:1;visibility:visible}
+.drawer{position:fixed;top:0;right:0;height:100%;width:380px;max-width:88vw;background:var(--card);
+  box-shadow:-12px 0 40px rgba(18,63,127,.18);transform:translateX(100%);transition:transform .26s ease;z-index:61;
+  display:flex;flex-direction:column;overflow-y:auto}
+.drawer.open{transform:translateX(0)}
+.drawer .dh{display:flex;justify-content:space-between;align-items:center;padding:20px 22px;border-bottom:1px solid var(--line)}
+.drawer .dh .brand{font-size:18px}
+.drawer .dclose{cursor:pointer;font-size:18px;color:var(--muted)}
+.drawer .dtabs{display:flex;gap:0;border-bottom:1px solid var(--line)}
+.drawer .dtab{flex:1;text-align:center;padding:13px;cursor:pointer;font-size:14px;color:var(--muted);border-bottom:2px solid transparent}
+.drawer .dtab.active{color:var(--bb-blue);border-color:var(--bb-blue);font-weight:600}
+.drawer .dbody{padding:22px}
+.drawer .dpane{display:none}
+.drawer .dpane.active{display:block}
+.divider{height:1px;background:var(--line);margin:22px 0}
+.kv{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line)}
+.balance{font-family:Georgia,serif;font-size:34px;color:var(--bb-blue);font-weight:600}

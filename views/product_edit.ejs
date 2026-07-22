@@ -1,0 +1,30 @@
+<% var title = '상품 수정 — Blue Market' %>
+<%- include('partials/header') %>
+<div class="narrow" style="margin:0 auto">
+  <h1 class="center">상품 수정</h1>
+  <div class="card">
+    <% if (error) { %><div class="alert err"><%= error %></div><% } %>
+    <form method="post" action="/products/<%= product.id %>/edit" enctype="multipart/form-data">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <label>상품명</label>
+      <input type="text" name="name" value="<%= product.name %>" maxlength="60" required>
+      <label>상품설명</label>
+      <textarea name="description" maxlength="1000"><%= product.description %></textarea>
+      <label>가격 (원)</label>
+      <input type="number" name="price" min="0" step="1" value="<%= product.price %>" required>
+
+      <% if (product.image) { %>
+        <label>현재 이미지</label>
+        <img src="/uploads/<%= product.image %>" alt="상품 이미지" style="max-width:180px;border-radius:10px;border:1px solid var(--line)">
+        <label class="small" style="display:flex;align-items:center;gap:6px;margin-top:8px">
+          <input type="checkbox" name="remove_image" value="1" style="width:auto"> 기존 이미지 삭제
+        </label>
+      <% } %>
+
+      <label>이미지 변경/추가 <span class="muted small">(jpg 또는 png, 3MB 이하, 선택)</span></label>
+      <input type="file" name="image" accept=".jpg,.jpeg,.png,image/jpeg,image/png">
+      <div style="margin-top:20px"><button class="btn block" type="submit">수정 저장</button></div>
+    </form>
+  </div>
+</div>
+<%- include('partials/footer') %>

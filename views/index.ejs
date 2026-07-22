@@ -1,0 +1,63 @@
+<% var title = 'Blue Market — 중고거래 플랫폼' %>
+<%- include('partials/header') %>
+
+<section class="hero">
+  <h1>가볍게 사고파는<br>동네 중고거래</h1>
+  <p>믿을 수 있는 사람들과 물건을 나누세요. 상품을 올리고, 대화하고, 안전하게 거래까지 한 곳에서.</p>
+  <div>
+    <a class="btn" href="/products">상품 둘러보기</a>
+    <% if (!currentUser) { %><a class="btn ghost" href="/register">시작하기</a><% } else { %><a class="btn ghost" href="/products/new">판매하기</a><% } %>
+  </div>
+</section>
+
+<div class="grid">
+  <div class="card"><h3>올리고 보기</h3><p class="muted small">상품을 등록하고 누구나 목록·상세로 확인해요.</p></div>
+  <div class="card"><h3>실시간 대화</h3><p class="muted small">전체 채팅과 1:1 채팅으로 바로 소통해요.</p></div>
+  <div class="card"><h3>안전한 송금</h3><p class="muted small">지갑을 충전하고 사용자끼리 송금해요.</p></div>
+  <div class="card"><h3>신고와 관리</h3><p class="muted small">악성 유저·상품을 신고하면 자동으로 조치돼요.</p></div>
+</div>
+
+<div class="section-title"><h2 style="margin:0">전체 채팅</h2></div>
+<div class="chat">
+  <div class="log" id="chatLog"></div>
+  <% if (currentUser) { %>
+    <form id="chatForm">
+      <input type="text" id="chatInput" placeholder="메시지를 입력하세요" maxlength="500" autocomplete="off">
+      <button class="btn" type="submit">전송</button>
+    </form>
+  <% } else { %>
+    <div style="padding:12px;border-top:1px solid var(--line)" class="muted small">채팅은 <a href="/login" data-open-drawer="login">로그인</a> 후 이용할 수 있습니다.</div>
+  <% } %>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  (function(){
+    var myId = <%= currentUser ? currentUser.id : 'null' %>;
+    var log = document.getElementById('chatLog');
+    var socket = io();
+    function add(m){
+      var wrap = document.createElement('div');
+      wrap.className = 'msg' + (myId && m.sender_id === myId ? ' mine' : '');
+      var nm = document.createElement('div'); nm.className='nm'; nm.textContent = m.sender_name;
+      var tx = document.createElement('div'); tx.textContent = m.content;
+      wrap.appendChild(nm); wrap.appendChild(tx); log.appendChild(wrap);
+      log.scrollTop = log.scrollHeight;
+    }
+    socket.on('global:history', function(list){ log.innerHTML=''; list.forEach(add); });
+    socket.on('global:message', add);
+    socket.on('chat:error', function(msg){ alert(msg); });
+    var form = document.getElementById('chatForm');
+    if (form){
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        var input = document.getElementById('chatInput');
+        var v = input.value.trim(); if(!v) return;
+        socket.emit('global:send', { content: v });
+        input.value='';
+      });
+    }
+  })();
+</script>
+
+<%- include('partials/footer') %>

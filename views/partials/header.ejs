@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= typeof title !== 'undefined' ? title : '중고마켓' %></title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="brand" href="/">
+        <svg width="20" height="26" viewBox="0 0 20 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 1h4v4.2c0 .7.3 1.3.8 1.8l2.7 2.7c1 1 1.5 2.3 1.5 3.7V22a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-8.6c0-1.4.5-2.7 1.5-3.7l2.7-2.7c.5-.5.8-1.1.8-1.8V1Z" fill="#1b52a4"/>
+          <rect x="7.4" y="0" width="5.2" height="2.2" rx="1.1" fill="#123f7f"/>
+        </svg>
+        <span>Blue Market</span>
+      </a>
+      <div class="spacer"></div>
+      <a class="navlink" href="/products">상품</a>
+      <% if (currentUser) { %>
+        <a class="navlink" href="/products/new">판매하기</a>
+        <a class="navlink" href="/my/products">내 상품</a>
+        <a class="navlink" href="/messages">쪽지함</a>
+        <a class="navlink" href="/wallet">지갑</a>
+        <a class="navlink" href="/mypage">마이페이지</a>
+        <% if (currentUser.is_admin) { %><a class="navlink" href="/admin">관리자</a><% } %>
+        <span class="who"><%= currentUser.display_name %>님</span>
+        <form method="post" action="/logout" style="margin:0">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button class="btn sm ghost" type="submit">로그아웃</button>
+        </form>
+      <% } else { %>
+        <a class="navlink" href="/login" data-open-drawer="login">로그인</a>
+        <a class="btn sm" href="/register" data-open-drawer="register">회원가입</a>
+      <% } %>
+    </nav>
+  </header>
+
+  <% if (!currentUser) { %>
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <aside class="drawer" id="authDrawer" aria-label="로그인/회원가입">
+    <div class="dh">
+      <span class="brand">Blue Market</span>
+      <span class="dclose" id="drawerClose" role="button" aria-label="닫기">✕</span>
+    </div>
+    <div class="dtabs">
+      <div class="dtab active" data-tab="login">로그인</div>
+      <div class="dtab" data-tab="register">회원가입</div>
+    </div>
+    <div class="dbody">
+      <div class="dpane active" data-pane="login">
+        <form method="post" action="/login">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <label>아이디</label>
+          <input type="text" name="username" autocomplete="username" required>
+          <label>비밀번호</label>
+          <input type="password" name="password" autocomplete="current-password" required>
+          <div style="margin-top:18px"><button class="btn block" type="submit">로그인</button></div>
+        </form>
+      </div>
+      <div class="dpane" data-pane="register">
+        <form method="post" action="/register">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <label>아이디 <span class="muted small">(영문/숫자/_ 3~20자)</span></label>
+          <input type="text" name="username" autocomplete="username" required>
+          <label>계정명</label>
+          <input type="text" name="display_name" required>
+          <label>비밀번호 <span class="muted small">(8자 이상)</span></label>
+          <input type="password" name="password" autocomplete="new-password" required>
+          <label>비밀번호 확인</label>
+          <input type="password" name="password2" autocomplete="new-password" required>
+          <label>보안문자</label>
+          <% if (captcha.useRecaptcha) { %>
+            <div class="g-recaptcha" data-sitekey="<%= captcha.site %>"></div>
+          <% } else { %>
+            <div class="caprow" style="display:flex;gap:10px;align-items:center">
+              <img class="capImg" src="/captcha.svg" alt="보안문자" style="border:1px solid var(--line);border-radius:8px;height:54px">
+              <button type="button" class="btn sm ghost" onclick="var im=this.parentNode.querySelector('.capImg');im.src='/captcha.svg?new='+Date.now()">새로고침</button>
+            </div>
+            <input type="text" name="captcha" placeholder="위 문자를 입력" autocomplete="off" required style="margin-top:8px;text-transform:uppercase">
+          <% } %>
+          <div style="margin-top:18px"><button class="btn block" type="submit">가입하기</button></div>
+        </form>
+      </div>
+    </div>
+  </aside>
+  <% if (captcha.useRecaptcha) { %><script src="https://www.google.com/recaptcha/api.js" async defer></script><% } %>
+  <script>
+    (function(){
+      var ov=document.getElementById('drawerOverlay'), dr=document.getElementById('authDrawer');
+      function open(tab){ ov.classList.add('open'); dr.classList.add('open'); if(tab) sel(tab); }
+      function close(){ ov.classList.remove('open'); dr.classList.remove('open'); }
+      function sel(tab){
+        document.querySelectorAll('.dtab').forEach(function(t){ t.classList.toggle('active', t.dataset.tab===tab); });
+        document.querySelectorAll('.dpane').forEach(function(p){ p.classList.toggle('active', p.dataset.pane===tab); });
+      }
+      document.querySelectorAll('[data-open-drawer]').forEach(function(a){
+        a.addEventListener('click', function(e){ e.preventDefault(); open(a.getAttribute('data-open-drawer')); });
+      });
+      document.querySelectorAll('.dtab').forEach(function(t){ t.addEventListener('click', function(){ sel(t.dataset.tab); }); });
+      document.getElementById('drawerClose').addEventListener('click', close);
+      ov.addEventListener('click', close);
+      document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
+    })();
+  </script>
+  <% } %>
+
+  <main class="container">

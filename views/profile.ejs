@@ -1,0 +1,77 @@
+<% var title = user.display_name + ' — Blue Market' %>
+<%- include('partials/header') %>
+
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+    <div>
+      <h1 style="margin-bottom:2px"><%= user.display_name %>
+        <% if (user.is_admin) { %><span class="tag blue">관리자</span><% } %>
+        <% if (user.status === 'suspended') { %><span class="tag red">휴면</span><% } %>
+      </h1>
+      <p class="muted small">@<%= user.username %> · 가입 <%= user.created_at %></p>
+    </div>
+    <% if (currentUser && currentUser.id !== user.id) { %>
+      <a class="btn sm ghost danger" href="/report?type=user&target=<%= user.username %>">신고</a>
+    <% } %>
+  </div>
+  <div class="divider"></div>
+  <p style="white-space:pre-wrap"><%= user.bio || '(소개글이 없습니다)' %></p>
+</div>
+
+<div class="section-title"><h2 style="margin:0">판매 상품</h2></div>
+<% if (products.length === 0) { %>
+  <div class="card muted center">등록한 상품이 없습니다.</div>
+<% } else { %>
+  <div class="grid">
+    <% products.forEach(function(p){ %>
+      <a class="product" href="/products/<%= p.id %>">
+        <% if (p.image) { %>
+          <div class="thumb" style="padding:0;overflow:hidden"><img src="/uploads/<%= p.image %>" alt="<%= p.name %>" style="width:100%;height:100%;object-fit:cover"></div>
+        <% } else { %>
+          <div class="thumb">사진</div>
+        <% } %>
+        <div class="pname"><%= p.name %></div>
+        <div class="price"><%= p.price.toLocaleString() %>원</div>
+      </a>
+    <% }); %>
+  </div>
+<% } %>
+
+<% if (currentUser && currentUser.id !== user.id) { %>
+  <div class="section-title"><h2 style="margin:0"><%= user.display_name %>님과 1:1 채팅</h2></div>
+  <div class="chat">
+    <div class="log" id="dmLog"></div>
+    <form id="dmForm">
+      <input type="text" id="dmInput" placeholder="메시지를 입력하세요" maxlength="500" autocomplete="off">
+      <button class="btn" type="submit">전송</button>
+    </form>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    (function(){
+      var myId = <%= currentUser.id %>, otherId = <%= user.id %>;
+      var log = document.getElementById('dmLog');
+      var socket = io();
+      function add(m){
+        var wrap=document.createElement('div');
+        wrap.className='msg'+(m.sender_id===myId?' mine':'');
+        var nm=document.createElement('div'); nm.className='nm'; nm.textContent=m.sender_name;
+        var tx=document.createElement('div'); tx.textContent=m.content;
+        wrap.appendChild(nm); wrap.appendChild(tx); log.appendChild(wrap);
+        log.scrollTop=log.scrollHeight;
+      }
+      socket.on('connect', function(){ socket.emit('dm:join', { userId: otherId }); });
+      socket.on('dm:history', function(d){ log.innerHTML=''; d.messages.forEach(add); });
+      socket.on('dm:message', add);
+      socket.on('chat:error', function(msg){ alert(msg); });
+      document.getElementById('dmForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        var input=document.getElementById('dmInput'); var v=input.value.trim(); if(!v) return;
+        socket.emit('dm:send', { userId: otherId, content: v });
+        input.value='';
+      });
+    })();
+  </script>
+<% } %>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,21 @@
+<% var title = '상품 등록 — Blue Market' %>
+<%- include('partials/header') %>
+<div class="narrow" style="margin:0 auto">
+  <h1 class="center">상품 등록</h1>
+  <div class="card">
+    <% if (error) { %><div class="alert err"><%= error %></div><% } %>
+    <form method="post" action="/products/new" enctype="multipart/form-data">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <label>상품명</label>
+      <input type="text" name="name" value="<%= form.name || '' %>" maxlength="60" required>
+      <label>상품설명</label>
+      <textarea name="description" maxlength="1000" placeholder="상품 상태, 거래 방법 등을 적어주세요"><%= form.description || '' %></textarea>
+      <label>가격 (원)</label>
+      <input type="number" name="price" min="0" step="1" value="<%= form.price || '' %>" required>
+      <label>상품 이미지 <span class="muted small">(jpg 또는 png, 3MB 이하, 선택)</span></label>
+      <input type="file" name="image" accept=".jpg,.jpeg,.png,image/jpeg,image/png">
+      <div style="margin-top:20px"><button class="btn block" type="submit">등록하기</button></div>
+    </form>
+  </div>
+</div>
+<%- include('partials/footer') %>

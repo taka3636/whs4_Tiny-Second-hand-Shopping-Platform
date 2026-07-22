@@ -1,0 +1,46 @@
+<% var title = '신고 — Blue Market' %>
+<%- include('partials/header') %>
+<div class="narrow" style="margin:0 auto">
+  <h1 class="center">신고</h1>
+  <div class="card">
+    <% if (error) { %><div class="alert err"><%= error %></div><% } %>
+    <% if (notice) { %><div class="alert ok"><%= notice %></div><% } %>
+    <form method="post" action="/report">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <label>신고 유형</label>
+      <select name="type" id="reportType">
+        <option value="product" <%= form.type === 'product' ? 'selected' : '' %>>상품</option>
+        <option value="user" <%= form.type === 'user' ? 'selected' : '' %>>사용자</option>
+      </select>
+      <label id="targetLabel"><%= form.type === 'user' ? '사용자 아이디(username)' : '상품 ID' %></label>
+      <input type="text" name="target" id="targetInput" value="<%= form.target || '' %>"
+             placeholder="<%= form.type === 'user' ? '예: gildong' : '예: 12' %>" autocomplete="off" required>
+      <p class="muted small" id="targetHelp"><%= form.type === 'user' ? '신고할 사용자의 아이디(username)를 입력하세요.' : '신고할 상품의 번호(ID)를 입력하세요.' %></p>
+      <label>신고 사유 <span class="muted small">(5~300자)</span></label>
+      <textarea name="reason" maxlength="300" required><%= form.reason || '' %></textarea>
+      <div style="margin-top:16px"><button class="btn block" type="submit">신고 접수</button></div>
+    </form>
+    <p class="small muted" style="margin-top:14px">누적 신고가 기준을 넘으면 상품은 자동 차단, 사용자는 자동 휴면 처리됩니다.</p>
+  </div>
+</div>
+<script>
+  (function(){
+    var sel=document.getElementById('reportType'),
+        lab=document.getElementById('targetLabel'),
+        inp=document.getElementById('targetInput'),
+        help=document.getElementById('targetHelp');
+    sel.addEventListener('change', function(){
+      if(sel.value==='user'){
+        lab.textContent='사용자 아이디(username)';
+        inp.placeholder='예: gildong';
+        help.textContent='신고할 사용자의 아이디(username)를 입력하세요.';
+      } else {
+        lab.textContent='상품 ID';
+        inp.placeholder='예: 12';
+        help.textContent='신고할 상품의 번호(ID)를 입력하세요.';
+      }
+      inp.value='';
+    });
+  })();
+</script>
+<%- include('partials/footer') %>

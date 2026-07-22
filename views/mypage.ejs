@@ -1,0 +1,37 @@
+<% var title = '마이페이지 — Blue Market' %>
+<%- include('partials/header') %>
+<div class="narrow" style="margin:0 auto">
+  <h1 class="center">마이페이지</h1>
+  <% if (error) { %><div class="alert err"><%= error %></div><% } %>
+  <% if (notice) { %><div class="alert ok"><%= notice %></div><% } %>
+
+  <div class="card">
+    <h3>프로필</h3>
+    <p class="small muted">잔액 <%= me.balance.toLocaleString() %>원</p>
+    <form method="post" action="/mypage/profile">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <label>아이디 <span class="muted small">(로그인 ID · 영문/숫자/_ 3~20자)</span></label>
+      <input type="text" name="username" value="<%= me.username %>" maxlength="20" required>
+      <label>계정명 <span class="muted small">(표시 이름)</span></label>
+      <input type="text" name="display_name" value="<%= me.display_name %>" maxlength="20" required>
+      <label>소개글</label>
+      <textarea name="bio" maxlength="300"><%= me.bio %></textarea>
+      <div style="margin-top:16px"><button class="btn" type="submit">프로필 저장</button></div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>비밀번호 변경</h3>
+    <form method="post" action="/mypage/password">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <label>현재 비밀번호</label>
+      <input type="password" name="current_password" autocomplete="current-password" required>
+      <label>새 비밀번호 <span class="muted small">(8자 이상)</span></label>
+      <input type="password" name="new_password" autocomplete="new-password" required>
+      <label>새 비밀번호 확인</label>
+      <input type="password" name="new_password2" autocomplete="new-password" required>
+      <div style="margin-top:16px"><button class="btn" type="submit">비밀번호 변경</button></div>
+    </form>
+  </div>
+</div>
+<%- include('partials/footer') %>

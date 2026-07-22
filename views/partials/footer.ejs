@@ -1,0 +1,68 @@
+  </main>
+  <footer class="footer">
+    Blue Market · Tiny Second-hand Shopping Platform · Secure Coding 과제
+  </footer>
+
+  <!-- 상담 챗봇 위젯 -->
+  <button id="cbFab" type="button" aria-label="상담 챗봇 열기/닫기">
+    <svg id="cbIcoOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v7A2.5 2.5 0 0 1 17.5 15H9l-4 3.5V15H6.5A2.5 2.5 0 0 1 4 12.5v-7Z" fill="#fff"/></svg>
+    <svg id="cbIcoClose" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none"><path d="M6 6l12 12M18 6L6 18" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+  </button>
+  <div id="cbPanel" hidden>
+    <div class="cb-head">Blue Market 상담<span id="cbClose" role="button" aria-label="닫기">✕</span></div>
+    <div class="cb-log" id="cbLog"></div>
+    <form id="cbForm" class="cb-form">
+      <input type="text" id="cbInput" placeholder="무엇을 도와드릴까요?" maxlength="500" autocomplete="off">
+      <button type="submit" class="btn sm">전송</button>
+    </form>
+  </div>
+  <style>
+    #cbFab{position:fixed;right:22px;bottom:22px;width:56px;height:56px;border:none;padding:0;border-radius:50%;background:var(--bb-blue);
+      display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 20px rgba(18,63,127,.35);z-index:55}
+    #cbFab:hover{background:var(--bb-blue-deep)}
+    #cbPanel{position:fixed;right:22px;bottom:88px;width:330px;max-width:calc(100vw - 44px);height:420px;background:var(--card);
+      border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 40px rgba(18,63,127,.22);display:flex;flex-direction:column;overflow:hidden;z-index:55}
+    #cbPanel[hidden]{display:none}
+    #cbPanel .cb-head{background:var(--bb-blue);color:#fff;padding:13px 16px;font-family:Georgia,serif;font-size:15px;display:flex;justify-content:space-between;align-items:center}
+    #cbPanel #cbClose{cursor:pointer;opacity:.85;font-size:16px}
+    #cbPanel .cb-log{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;background:var(--paper)}
+    #cbPanel .cb-msg{max-width:82%;padding:8px 12px;border-radius:12px;font-size:13.5px;line-height:1.5;word-break:break-word}
+    #cbPanel .cb-bot{background:#fff;border:1px solid var(--line);align-self:flex-start}
+    #cbPanel .cb-me{background:var(--bb-blue-soft);align-self:flex-end}
+    #cbPanel .cb-form{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
+    #cbPanel .cb-form input{border-radius:999px}
+  </style>
+  <script>
+    (function(){
+      var csrf = '<%= csrfToken %>';
+      var fab=document.getElementById('cbFab'), panel=document.getElementById('cbPanel'),
+          log=document.getElementById('cbLog'), form=document.getElementById('cbForm'), input=document.getElementById('cbInput'),
+          icoOpen=document.getElementById('cbIcoOpen'), icoClose=document.getElementById('cbIcoClose');
+      var greeted=false;
+      function add(text, who){
+        var d=document.createElement('div'); d.className='cb-msg '+(who==='me'?'cb-me':'cb-bot');
+        d.textContent=text; log.appendChild(d); log.scrollTop=log.scrollHeight;
+      }
+      function openPanel(){
+        panel.hidden=false; icoOpen.style.display='none'; icoClose.style.display='block';
+        if(!greeted){ add('안녕하세요! 무엇을 도와드릴까요? 가입·상품·검색·송금·신고·채팅 등을 물어보세요.', 'bot'); greeted=true; }
+        input.focus();
+      }
+      function closePanel(){ panel.hidden=true; icoOpen.style.display='block'; icoClose.style.display='none'; }
+      function toggle(){ if(panel.hidden) openPanel(); else closePanel(); }
+      fab.addEventListener('click', toggle);
+      document.getElementById('cbClose').addEventListener('click', closePanel);
+      document.addEventListener('keydown', function(e){ if(e.key==='Escape' && !panel.hidden) closePanel(); });
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        var msg=input.value.trim(); if(!msg) return;
+        add(msg,'me'); input.value='';
+        fetch('/chatbot',{method:'POST',headers:{'content-type':'application/json','x-csrf-token':csrf},body:JSON.stringify({message:msg})})
+          .then(function(r){return r.json();})
+          .then(function(d){ add(d.reply||'…','bot'); })
+          .catch(function(){ add('일시적인 오류가 발생했어요. 다시 시도해 주세요.','bot'); });
+      });
+    })();
+  </script>
+</body>
+</html>
